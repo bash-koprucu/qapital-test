@@ -1,7 +1,6 @@
 package com.qapital.savings.rule;
 
-import org.joda.time.LocalDate;
-
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,38 +9,39 @@ import java.util.List;
  */
 public class SavingsRule {
 	
-	private Long id;
-	private Long userId;
+	private final Long id;
+	private final Long userId;
 	
-	private String placeDescription;
-	private Double amount;
-	private List<Long> savingsGoalIds;
-	private RuleType ruleType;
-	private Status status;
+	private final String placeDescription;
+	private final BigDecimal amount;
+	private final List<Long> savingsGoalIds;
+	private final RuleType ruleType;
+	private final Status status;
 	
-	public SavingsRule() {}
 
-	public static SavingsRule createGuiltyPleasureRule(Long id, Long userId, String placeDescription, Double penaltyAmount) {
-		SavingsRule guiltyPleasureRule = new SavingsRule();
-        guiltyPleasureRule.setId(id);
-		guiltyPleasureRule.setUserId(userId);
-		guiltyPleasureRule.setPlaceDescription(placeDescription);
-		guiltyPleasureRule.setAmount(penaltyAmount);
-		guiltyPleasureRule.setSavingsGoalIds(new ArrayList<>());
-		guiltyPleasureRule.setRuleType(RuleType.guiltypleasure);
-		guiltyPleasureRule.setStatus(Status.active);
-		return guiltyPleasureRule;
+
+	private SavingsRule(Long id,
+						Long userId,
+						RuleType ruleType,
+						String placeDescription,
+						BigDecimal amount,
+						List<Long> savingsGoalIds,
+						Status status) {
+		this.id = id;
+		this.userId = userId;
+		this.ruleType = ruleType;
+		this.placeDescription = placeDescription;
+		this.amount = amount;
+		this.savingsGoalIds = savingsGoalIds;
+		this.status = status;
+	}
+
+	public static SavingsRule createGuiltyPleasureRule(Long id, Long userId, String placeDescription, BigDecimal penaltyAmount) {
+		return  new SavingsRule(id, userId, RuleType.guiltypleasure, placeDescription, penaltyAmount, new ArrayList<>(), Status.active);
 	}
 	
-	public static SavingsRule createRoundupRule(Long id, Long userId, Double roundupToNearest) {
-		SavingsRule roundupRule = new SavingsRule();
-        roundupRule.setId(id);
-		roundupRule.setUserId(userId);
-		roundupRule.setAmount(roundupToNearest);
-		roundupRule.setSavingsGoalIds(new ArrayList<>());
-		roundupRule.setRuleType(RuleType.roundup);
-		roundupRule.setStatus(Status.active);
-		return roundupRule;
+	public static SavingsRule createRoundupRule(Long id, Long userId, BigDecimal roundupToNearest) {
+		return new SavingsRule(id, userId, RuleType.roundup, null, roundupToNearest, new ArrayList<>(), Status.active);
 	}
 
 	public void addSavingsGoal(Long savingsGoalId) {
@@ -58,56 +58,33 @@ public class SavingsRule {
 		return id;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
-	}
-
 	public Long getUserId() {
 		return userId;
-	}
-
-	public void setUserId(Long userId) {
-		this.userId = userId;
 	}
 
     public String getPlaceDescription() {
         return placeDescription;
     }
 
-    public void setPlaceDescription(String placeDescription) {
-        this.placeDescription = placeDescription;
-    }
-
-    public Double getAmount() {
+    public BigDecimal getAmount() {
 		return amount;
-	}
-
-	public void setAmount(Double amount) {
-		this.amount = amount;
 	}
 
 	public List<Long> getSavingsGoalIds() {
 		return savingsGoalIds;
 	}
 
-	public void setSavingsGoalIds(List<Long> savingsGoalIds) {
-		this.savingsGoalIds = savingsGoalIds;
-	}
-
 	public RuleType getRuleType() {
 		return ruleType;
 	}
 
-	public void setRuleType(RuleType ruleType) {
-		this.ruleType = ruleType;
-	}
-	
 	public Status getStatus() {
 		return status;
 	}
 	
-	public void setStatus(Status status) {
-		this.status = status;
+	public SavingsRule setStatus(Status status) {
+		return status == this.status ? this :
+				new SavingsRule(id, userId, ruleType, placeDescription, amount, savingsGoalIds, status);
 	}
 
 	public boolean isActive() {

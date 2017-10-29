@@ -1,17 +1,18 @@
 package com.qapital.bankdata.transaction;
 
-
 import org.joda.time.LocalDate;
+import java.math.BigDecimal;
+import java.util.Objects;
 
 public class Transaction {
 
-    private Long id;
-    private Long userId;
-    private Double amount;
-    private String description;
-    private LocalDate date;
+    private final Long id;
+    private final Long userId;
+    private final BigDecimal amount;
+    private final String description;
+    private final LocalDate date;
 
-    public Transaction(Long id, Long userId, Double amount, String description, LocalDate date) {
+    public Transaction(Long id, Long userId, BigDecimal amount, String description, LocalDate date) {
         this.id = id;
         this.userId = userId;
         this.amount = amount;
@@ -23,40 +24,37 @@ public class Transaction {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public Double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
-    }
-
-    public void setAmount(Double amount) {
-        this.amount = amount;
     }
 
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(LocalDate date) {
-        this.date = date;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Transaction that = (Transaction) o;
+        return Objects.equals(id, that.id) &&
+                Objects.equals(userId, that.userId) &&
+                Objects.equals(amount, that.amount) &&
+                Objects.equals(description, that.description) &&
+                Objects.equals(date, that.date);
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, userId, amount, description, date);
+    }
 }
