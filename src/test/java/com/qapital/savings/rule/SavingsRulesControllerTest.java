@@ -29,8 +29,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(SavingsRulesController.class)
-@Ignore // SavingsEvent.date is dynamic, which makes t
-// TODO implement all tests
 public class SavingsRulesControllerTest {
 
     @Autowired
@@ -38,10 +36,6 @@ public class SavingsRulesControllerTest {
 
     @MockBean
     private SavingsRulesService savingsRulesService;
-
-
-
-
 
     @Test
     public void executeRule() throws Exception {
@@ -70,7 +64,8 @@ public class SavingsRulesControllerTest {
                 .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andDo(mvcResult -> System.out.println(mvcResult.getResponse().getContentAsString()))
                 .andExpect(MockMvcResultMatchers.content().json("[{\"userId\":1,\"savingsGoalId\":2,\"savingsRuleId\":10,\"ruleType\":\"guiltypleasure\",\"eventName\":\"rule_application\",\"date\":\"2017-10-30\",\"amount\":15.40,\"triggerId\":111,\"cancelled\":false,\"created\":\"2017-10-30T20:30:14Z\"},{\"userId\":1,\"savingsGoalId\":3,\"savingsRuleId\":11,\"ruleType\":\"roundup\",\"eventName\":\"rule_application\",\"date\":\"2017-10-30\",\"amount\":4.60,\"triggerId\":111,\"cancelled\":false,\"created\":\"2017-10-30T20:30:14Z\"}]"));
-
+               // implement with jsonPath()
     }
+    // implement missing tests
 
 }
