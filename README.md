@@ -1,5 +1,5 @@
 
-### Solution by Ba?ar K?pr?c?
+### Solution by Basar Koprucu
 
 
 ### Changes
