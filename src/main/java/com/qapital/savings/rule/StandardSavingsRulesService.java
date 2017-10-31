@@ -7,12 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 import static com.qapital.savings.event.SavingsEvent.EventName.rule_application;
 import static com.qapital.savings.rule.SavingsRule.RuleType.guiltypleasure;
@@ -49,7 +47,6 @@ public class StandardSavingsRulesService implements SavingsRulesService {
             return Collections.emptyList();
         }
         List<SavingsEvent> savingsEvents = new ArrayList<>();
-        LocalDate eventDate = LocalDate.now();
         transactions.stream()
             .filter(transaction -> transaction.getAmount().signum() == -1) // Apply only to expense transactions
             .forEach(transaction -> {
@@ -58,14 +55,14 @@ public class StandardSavingsRulesService implements SavingsRulesService {
                     BigDecimal roundUpAmount  = divideToGoalIds(roundup(transaction.getAmount(), savingsRule.getAmount()), savingsGoalIds.size());
                     savingsGoalIds.forEach(goalId -> savingsEvents.add(
                             new SavingsEvent(savingsRule.getUserId(), goalId, savingsRule, rule_application,
-                                             eventDate, roundUpAmount, transaction.getId())
+                                             transaction.getDate(), roundUpAmount, transaction.getId())
                     ));
                 } else if (guiltypleasure == savingsRule.getRuleType() && transaction.getDescription() != null) {
                     if (transaction.getDescription().equalsIgnoreCase(savingsRule.getPlaceDescription())) {
                         BigDecimal roundUpAmount = divideToGoalIds(savingsRule.getAmount(), savingsGoalIds.size());
                         savingsGoalIds.forEach(goalId -> savingsEvents.add(
                                 new SavingsEvent(savingsRule.getUserId(), goalId, savingsRule, rule_application,
-                                                 eventDate, roundUpAmount, transaction.getId()))
+                                                 transaction.getDate(), roundUpAmount, transaction.getId()))
                         );
                     }
                 }

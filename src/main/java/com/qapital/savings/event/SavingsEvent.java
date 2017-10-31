@@ -30,7 +30,7 @@ public class SavingsEvent {
 	private final Long savingsRuleId;
 	private final EventName eventName;
 
-	private final LocalDate date;
+	private final LocalDate date; // Is this the transaction date?
 	private final BigDecimal amount;
 	private final Long triggerId;
 	private final RuleType ruleType;
@@ -80,6 +80,21 @@ public class SavingsEvent {
 				false,
 				new Date());
 	}
+
+    public SavingsEvent(Long userId, Long savingsGoalId, SavingsRule savingsRule, EventName eventName, LocalDate date, BigDecimal amount, Long triggerId, Date created) {
+        this(null,
+                userId,
+                savingsGoalId,
+                savingsRule.getId(),
+                savingsRule.getRuleType(),
+                eventName,
+                date,
+                amount,
+                triggerId,
+                null,
+                false,
+                created == null ? new Date() : created);
+    }
 
 
 	/**
