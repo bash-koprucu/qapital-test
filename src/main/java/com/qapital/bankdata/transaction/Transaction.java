@@ -1,7 +1,7 @@
 package com.qapital.bankdata.transaction;
 
-import org.joda.time.LocalDate;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Objects;
 
 public class Transaction {
@@ -23,7 +23,6 @@ public class Transaction {
     public Long getId() {
         return id;
     }
-
 
     public Long getUserId() {
         return userId;
@@ -57,4 +56,5 @@ public class Transaction {
     public int hashCode() {
         return Objects.hash(id, userId, amount, description, date);
     }
+
 }

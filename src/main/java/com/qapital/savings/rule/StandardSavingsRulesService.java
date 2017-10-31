@@ -3,15 +3,16 @@ package com.qapital.savings.rule;
 import com.qapital.bankdata.transaction.Transaction;
 import com.qapital.bankdata.transaction.TransactionsService;
 import com.qapital.savings.event.SavingsEvent;
-import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import static com.qapital.savings.event.SavingsEvent.EventName.rule_application;
 import static com.qapital.savings.rule.SavingsRule.RuleType.guiltypleasure;
@@ -40,32 +41,32 @@ public class StandardSavingsRulesService implements SavingsRulesService {
 
     @Override
     public List<SavingsEvent> executeRule(SavingsRule savingsRule) {
+        if(!savingsRule.isActive() || savingsRule.getSavingsGoalIds() == null || savingsRule.getSavingsGoalIds().isEmpty()) {
+            return Collections.emptyList();
+        }
         List<Transaction> transactions = transactionsService.latestTransactionsForUser(savingsRule.getUserId());
         if(transactions.isEmpty()) {
             return Collections.emptyList();
         }
         List<SavingsEvent> savingsEvents = new ArrayList<>();
+        LocalDate eventDate = LocalDate.now();
         transactions.stream()
             .filter(transaction -> transaction.getAmount().signum() == -1) // Apply only to expense transactions
             .forEach(transaction -> {
-                if(savingsRule.isActive()) {
-                    LocalDate eventDate = LocalDate.now();
-                    List<Long> savingsGoalIds = savingsRule.getSavingsGoalIds(); // TODO validation?
-                    if(roundup == savingsRule.getRuleType()) { // operator == is safe with enum
-                        BigDecimal roundUpAmount  = divideToGoalIds(roundup(savingsRule.getAmount(), transaction.getAmount()), savingsGoalIds.size());
+                List<Long> savingsGoalIds = savingsRule.getSavingsGoalIds();
+                if(roundup == savingsRule.getRuleType()) { // == is safe with enum
+                    BigDecimal roundUpAmount  = divideToGoalIds(roundup(transaction.getAmount(), savingsRule.getAmount()), savingsGoalIds.size());
+                    savingsGoalIds.forEach(goalId -> savingsEvents.add(
+                            new SavingsEvent(savingsRule.getUserId(), goalId, savingsRule, rule_application,
+                                             eventDate, roundUpAmount, transaction.getId())
+                    ));
+                } else if (guiltypleasure == savingsRule.getRuleType() && transaction.getDescription() != null) {
+                    if (transaction.getDescription().equalsIgnoreCase(savingsRule.getPlaceDescription())) {
+                        BigDecimal roundUpAmount = divideToGoalIds(savingsRule.getAmount(), savingsGoalIds.size());
                         savingsGoalIds.forEach(goalId -> savingsEvents.add(
-                                new SavingsEvent(savingsRule.getUserId(), goalId, savingsRule.getId(),
-                                        rule_application, eventDate, roundUpAmount, transaction.getId(), savingsRule)
-                        ));
-                    } else if (guiltypleasure == savingsRule.getRuleType()) {
-                        // TODO validation, case sensitivity of description?
-                        if (savingsRule.getPlaceDescription().equalsIgnoreCase(transaction.getDescription())) {
-                            BigDecimal roundUpAmount = divideToGoalIds(savingsRule.getAmount(), savingsGoalIds.size());
-                            savingsGoalIds.forEach(goalId -> savingsEvents.add(
-                                    new SavingsEvent(savingsRule.getUserId(), goalId, savingsRule.getId(),
-                                            rule_application, eventDate, roundUpAmount, transaction.getId(), savingsRule))
-                            );
-                        }
+                                new SavingsEvent(savingsRule.getUserId(), goalId, savingsRule, rule_application,
+                                                 eventDate, roundUpAmount, transaction.getId()))
+                        );
                     }
                 }
             });
@@ -81,9 +82,9 @@ public class StandardSavingsRulesService implements SavingsRulesService {
     }
 
     static BigDecimal divideToGoalIds(BigDecimal amount, int numberOfGoalIds) {
-        if(numberOfGoalIds == 1) return amount;
-        return amount.divide(new BigDecimal(numberOfGoalIds), 4,  // TODO we need to decide on scale based on business requirements)
-                                  BigDecimal.ROUND_HALF_EVEN);
+        if(numberOfGoalIds <= 1) return amount;
+        return amount.divide(new BigDecimal(numberOfGoalIds), 2,  // TODO we need to decide on scale and rounding
+                                  BigDecimal.ROUND_UP);
     }
 
 }
