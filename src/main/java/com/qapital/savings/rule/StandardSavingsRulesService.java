@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import static com.qapital.savings.event.SavingsEvent.EventName.rule_application;
 import static com.qapital.savings.rule.SavingsRule.RuleType.guiltypleasure;
@@ -28,11 +29,8 @@ public class StandardSavingsRulesService implements SavingsRulesService {
 
     @Override
     public List<SavingsRule> activeRulesForUser(Long userId) {
-        SavingsRule guiltyPleasureRule = SavingsRule.createGuiltyPleasureRule(1L, userId, "Starbucks", new BigDecimal("3.00"));
-        guiltyPleasureRule.addSavingsGoal(1L);
-        guiltyPleasureRule.addSavingsGoal(2L);
-        SavingsRule roundupRule = SavingsRule.createRoundupRule(2L, userId, new BigDecimal("2.00"));
-        roundupRule.addSavingsGoal(1L);
+        SavingsRule guiltyPleasureRule = SavingsRule.createGuiltyPleasureRule(1L, userId, "Starbucks", new BigDecimal("3.00"), 1L, 2L);
+        SavingsRule roundupRule = SavingsRule.createRoundupRule(2L, userId, new BigDecimal("2.00"), 1L);
 
         return Collections.unmodifiableList(Arrays.asList(guiltyPleasureRule, roundupRule));
     }
@@ -50,7 +48,7 @@ public class StandardSavingsRulesService implements SavingsRulesService {
         transactions.stream()
             .filter(transaction -> transaction.getAmount().signum() == -1) // Apply only to expense transactions
             .forEach(transaction -> {
-                List<Long> savingsGoalIds = savingsRule.getSavingsGoalIds();
+                Set<Long> savingsGoalIds = savingsRule.getSavingsGoalIds();
                 if(roundup == savingsRule.getRuleType()) { // == is safe with enum
                     BigDecimal roundUpAmount  = divideToGoalIds(roundup(transaction.getAmount(), savingsRule.getAmount()), savingsGoalIds.size());
                     savingsGoalIds.forEach(goalId -> savingsEvents.add(

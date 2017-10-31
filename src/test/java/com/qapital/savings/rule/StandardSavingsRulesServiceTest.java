@@ -58,9 +58,7 @@ public class StandardSavingsRulesServiceTest {
 
     @Test
     public void executeRuleShouldOnlyApplyToDebitTransaction() throws Exception {
-        SavingsRule roundupRule = SavingsRule.createRoundupRule(1L, 2L, new BigDecimal("2.00"));
-        roundupRule.addSavingsGoal(11L);
-        roundupRule.addSavingsGoal(22L);
+        SavingsRule roundupRule = SavingsRule.createRoundupRule(1L, 2L, new BigDecimal("2.00"), 11L, 22L);
 
         when(transactionsService.latestTransactionsForUser(eq(roundupRule.getUserId()))).thenReturn(Arrays.asList(
                 new Transaction(555L, 2L, BigDecimal.ONE.negate(), "test 1", LocalDate.now()),

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
-import com.fasterxml.jackson.datatype.jsr310.JSR310Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -14,22 +14,20 @@ import static org.junit.Assert.*;
 public class SavingsRuleTest {
 
     static final ObjectMapper mapper;
+
     static {
         mapper = new ObjectMapper();
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-
         mapper.setDateFormat(new ISO8601DateFormat());
-        mapper.registerModule(new JSR310Module());
+        mapper.registerModule(new JavaTimeModule());
     }
 
     private final SavingsRule roundUpRule;
     private final SavingsRule guiltyPleasureRule;
 
     public SavingsRuleTest() {
-        roundUpRule = SavingsRule.createRoundupRule(1L, 100L, new BigDecimal("12.20"));
-        roundUpRule.addSavingsGoal(12L);
-        roundUpRule.addSavingsGoal(2342L);
+        roundUpRule = SavingsRule.createRoundupRule(1L, 100L, new BigDecimal("12.20"), 12L, 2342L);
         guiltyPleasureRule = SavingsRule.createGuiltyPleasureRule(2L, 100L, "Dorsia", new BigDecimal("0.10"));
     }
 
