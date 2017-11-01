@@ -12,13 +12,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Arrays;
-import java.util.Date;
 
-import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -37,7 +36,7 @@ public class SavingsRulesControllerTest {
 
     @Before
     public void setUp() throws Exception {
-        Date created = Date.from(LocalDateTime.of(2017, 10, 30, 21, 30, 14).atZone(ZoneId.systemDefault()).toInstant());
+        Instant created  = LocalDateTime.of(2017, 10, 30, 21, 30, 14).atZone(ZoneId.systemDefault()).toInstant();
         when(savingsRulesService.executeRule(any(SavingsRule.class))).thenReturn(Arrays.asList(
                 new SavingsEvent(1L, 2L,
                         SavingsRule.createGuiltyPleasureRule(10L, 1L, "Dorsia", BigDecimal.ONE),

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
-import com.fasterxml.jackson.datatype.jsr310.JSR310Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 /**
  * Holds the ObjectMapper instance similarily configured as the application
@@ -19,7 +19,7 @@ public class CustomizedJacksonMapper {
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
         mapper.setDateFormat(new ISO8601DateFormat());
-        mapper.registerModule(new JSR310Module());
+        mapper.registerModule(new JavaTimeModule());
     }
     public static ObjectMapper getMapper() {
         return mapper;

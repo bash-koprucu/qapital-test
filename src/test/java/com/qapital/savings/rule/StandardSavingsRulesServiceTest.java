@@ -1,6 +1,5 @@
 package com.qapital.savings.rule;
 
-import com.qapital.bankdata.transaction.StandardTransactionsService;
 import com.qapital.bankdata.transaction.Transaction;
 import com.qapital.bankdata.transaction.TransactionsService;
 import com.qapital.savings.event.SavingsEvent;
@@ -16,7 +15,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
@@ -26,7 +24,9 @@ public class StandardSavingsRulesServiceTest {
     public MockitoRule rule = MockitoJUnit.rule();
 
     @Mock
-    TransactionsService transactionsService;
+    private TransactionsService transactionsService;
+
+    private final SavingsRulesService savingsRulesService = new StandardSavingsRulesService(transactionsService);
 
     @Test
     public void shouldRoundUp() throws Exception {
@@ -65,7 +65,7 @@ public class StandardSavingsRulesServiceTest {
                 new Transaction(444L, 2L, BigDecimal.ONE, "test 2", LocalDate.now())
         ));
 
-        List<SavingsEvent> savingsEvents = new StandardSavingsRulesService(transactionsService).executeRule(roundupRule);
+        List<SavingsEvent> savingsEvents = savingsRulesService.executeRule(roundupRule);
         savingsEvents.forEach(savingsEvent -> assertTrue(savingsEvent.getTriggerId().equals(555L)));
     }
 }

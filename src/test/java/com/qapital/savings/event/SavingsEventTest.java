@@ -9,7 +9,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
 
@@ -23,7 +22,7 @@ public class SavingsEventTest {
     private final SavingsEvent savingsEvent = new SavingsEvent(1000L,
             1L, 2L, 4L, SavingsRule.RuleType.roundup, SavingsEvent.EventName.rule_application,
             LocalDate.of(2017, 10, 30), new BigDecimal("10.25"), 123L, 111L, false,
-            Date.from(LocalDateTime.of(2017, 10, 30, 21, 30, 14).atZone(ZoneId.systemDefault()).toInstant()));
+            LocalDateTime.of(2017, 10, 30, 21, 30, 14).atZone(ZoneId.systemDefault()).toInstant());
 
 
 

@@ -7,8 +7,8 @@ import com.qapital.savings.rule.SavingsRule;
 import com.qapital.savings.rule.SavingsRule.RuleType;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -23,7 +23,6 @@ import java.util.Objects;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SavingsEvent {
-	
 	private final Long id;
 	private final Long userId;
 	private final Long savingsGoalId;
@@ -36,7 +35,7 @@ public class SavingsEvent {
 	private final RuleType ruleType;
 	private final Long savingsTransferId;
 	private final Boolean cancelled;
-	private final Date created;
+	private final Instant created;
 
     @JsonCreator
     SavingsEvent(@JsonProperty("id") Long id,
@@ -50,7 +49,7 @@ public class SavingsEvent {
                  @JsonProperty("triggerId") Long triggerId,
                  @JsonProperty("savingsTransferId") Long savingsTransferId,
                  @JsonProperty("cancelled") Boolean cancelled,
-                 @JsonProperty("created") Date created) {
+                 @JsonProperty("created") Instant created) {
 		this.id = id;
 		this.userId = userId;
 		this.savingsGoalId = savingsGoalId;
@@ -78,10 +77,10 @@ public class SavingsEvent {
 				triggerId,
 				null,
 				false,
-				new Date());
+				Instant.now());
 	}
 
-    public SavingsEvent(Long userId, Long savingsGoalId, SavingsRule savingsRule, EventName eventName, LocalDate date, BigDecimal amount, Long triggerId, Date created) {
+    public SavingsEvent(Long userId, Long savingsGoalId, SavingsRule savingsRule, EventName eventName, LocalDate date, BigDecimal amount, Long triggerId, Instant created) {
         this(null,
                 userId,
                 savingsGoalId,
@@ -93,7 +92,7 @@ public class SavingsEvent {
                 triggerId,
                 null,
                 false,
-                created == null ? new Date() : created);
+                created == null ? Instant.now() : created);
     }
 
 
@@ -103,7 +102,7 @@ public class SavingsEvent {
 	 * @return Immutable SavingsEvent with 'id' attribute set
 	 */
 	public SavingsEvent withId(Long id) {
-		if(Objects.equals(id, this.id)) { //TODO maybe we should only allow setting the Id if it is not there. Is this the desired behavior
+		if(Objects.equals(id, this.id)) { //TODO maybe we should only allow setting the Id if it is not there. Is this the desired behavior?
 			return this;
 		}
 		return new SavingsEvent(id, userId, savingsGoalId, savingsRuleId, ruleType, eventName, date, amount, triggerId, savingsTransferId, cancelled, created);
@@ -132,8 +131,6 @@ public class SavingsEvent {
 		}
 		return new SavingsEvent(id, userId, savingsGoalId, savingsRuleId, ruleType, eventName, date, amount, triggerId, savingsTransferId, cancelled, created);
 	}
-
-	//TODO other modifiers or constructors?
 
 
 	public Long getId() {
@@ -188,7 +185,7 @@ public class SavingsEvent {
 		return cancelled;
 	}
 
-	public Date getCreated() {
+	public Instant getCreated() {
 		return created;
 	}
 
