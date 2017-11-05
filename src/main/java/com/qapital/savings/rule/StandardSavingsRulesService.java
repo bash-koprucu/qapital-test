@@ -3,6 +3,8 @@ package com.qapital.savings.rule;
 import com.qapital.bankdata.transaction.Transaction;
 import com.qapital.bankdata.transaction.TransactionsService;
 import com.qapital.savings.event.SavingsEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,8 @@ import static com.qapital.savings.rule.SavingsRule.RuleType.roundup;
 
 @Service
 public class StandardSavingsRulesService implements SavingsRulesService {
+
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     private final TransactionsService transactionsService;
 
@@ -37,11 +41,13 @@ public class StandardSavingsRulesService implements SavingsRulesService {
 
     @Override
     public List<SavingsEvent> executeRule(SavingsRule savingsRule) {
-        if(!savingsRule.isActive() || savingsRule.getSavingsGoalIds() == null || savingsRule.getSavingsGoalIds().isEmpty()) {
+        if(!savingsRule.isActive() || savingsRule.getSavingsGoalIds().isEmpty()) {
+            log.debug("Savings rule inactive or without goals for savingsRule=[{}]", savingsRule);
             return Collections.emptyList();
         }
         List<Transaction> transactions = transactionsService.latestTransactionsForUser(savingsRule.getUserId());
         if(transactions.isEmpty()) {
+            log.debug("No transactions for userId={}", savingsRule.getUserId());
             return Collections.emptyList();
         }
         List<SavingsEvent> savingsEvents = new ArrayList<>();
@@ -55,8 +61,10 @@ public class StandardSavingsRulesService implements SavingsRulesService {
                             new SavingsEvent(savingsRule.getUserId(), goalId, savingsRule, rule_application,
                                              transaction.getDate(), roundUpAmount, transaction.getId())
                     ));
-                } else if (guiltypleasure == savingsRule.getRuleType() && transaction.getDescription() != null) {
-                    if (transaction.getDescription().equalsIgnoreCase(savingsRule.getPlaceDescription())) {
+                } else if (guiltypleasure == savingsRule.getRuleType()) {
+                    if(transaction.getDescription() == null) {
+                        log.warn("Transaction.Id={} of userId={} has null description.", transaction.getId(), savingsRule.getUserId());
+                    } else if (transaction.getDescription().equalsIgnoreCase(savingsRule.getPlaceDescription())) {
                         BigDecimal roundUpAmount = divideToGoalIds(savingsRule.getAmount(), savingsGoalIds.size());
                         savingsGoalIds.forEach(goalId -> savingsEvents.add(
                                 new SavingsEvent(savingsRule.getUserId(), goalId, savingsRule, rule_application,

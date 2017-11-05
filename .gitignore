@@ -1,4 +1,5 @@
-/qapital-backend-test.iml
-/.idea
-/target
-§
+*.iml
+.idea/**/*
+target/
+logs/
+**/.DS_Store
