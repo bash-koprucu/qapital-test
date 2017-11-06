@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -46,21 +47,24 @@ public class StandardSavingsRulesService implements SavingsRulesService {
             return Collections.emptyList();
         }
         List<Transaction> transactions = transactionsService.latestTransactionsForUser(savingsRule.getUserId());
-        if(transactions.isEmpty()) {
+        if(transactions == null || transactions.isEmpty()) {
             log.debug("No transactions for userId={}", savingsRule.getUserId());
             return Collections.emptyList();
         }
         List<SavingsEvent> savingsEvents = new ArrayList<>();
+        Instant now = Instant.now();
         transactions.stream()
             .filter(transaction -> transaction.getAmount().signum() == -1) // Apply only to expense transactions
             .forEach(transaction -> {
                 Set<Long> savingsGoalIds = savingsRule.getSavingsGoalIds();
                 if(roundup == savingsRule.getRuleType()) { // == is safe with enum
                     BigDecimal roundUpAmount  = divideToGoalIds(roundup(transaction.getAmount(), savingsRule.getAmount()), savingsGoalIds.size());
-                    savingsGoalIds.forEach(goalId -> savingsEvents.add(
-                            new SavingsEvent(savingsRule.getUserId(), goalId, savingsRule, rule_application,
-                                             transaction.getDate(), roundUpAmount, transaction.getId())
-                    ));
+                    if(roundUpAmount.signum() == 1) {
+                        savingsGoalIds.forEach(goalId -> savingsEvents.add(
+                                new SavingsEvent(savingsRule.getUserId(), goalId, savingsRule, rule_application,
+                                        transaction.getDate(), roundUpAmount, transaction.getId(), now)
+                        ));
+                    }
                 } else if (guiltypleasure == savingsRule.getRuleType()) {
                     if(transaction.getDescription() == null) {
                         log.warn("Transaction.Id={} of userId={} has null description.", transaction.getId(), savingsRule.getUserId());
@@ -68,7 +72,7 @@ public class StandardSavingsRulesService implements SavingsRulesService {
                         BigDecimal roundUpAmount = divideToGoalIds(savingsRule.getAmount(), savingsGoalIds.size());
                         savingsGoalIds.forEach(goalId -> savingsEvents.add(
                                 new SavingsEvent(savingsRule.getUserId(), goalId, savingsRule, rule_application,
-                                                 transaction.getDate(), roundUpAmount, transaction.getId()))
+                                                 transaction.getDate(), roundUpAmount, transaction.getId(), now))
                         );
                     }
                 }

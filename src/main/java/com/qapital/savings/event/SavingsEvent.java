@@ -209,13 +209,12 @@ public class SavingsEvent {
 				Objects.equals(triggerId, that.triggerId) &&
 				ruleType == that.ruleType &&
 				Objects.equals(savingsTransferId, that.savingsTransferId) &&
-				Objects.equals(cancelled, that.cancelled) &&
-				Objects.equals(created, that.created);
+				Objects.equals(cancelled, that.cancelled);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, userId, savingsGoalId, savingsRuleId, eventName, date, amount, triggerId, ruleType, savingsTransferId, cancelled, created);
+		return Objects.hash(id, userId, savingsGoalId, savingsRuleId, eventName, date, amount, triggerId, ruleType, savingsTransferId, cancelled);
 	}
 
     @Override
