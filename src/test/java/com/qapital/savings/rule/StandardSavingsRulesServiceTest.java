@@ -55,7 +55,7 @@ public class StandardSavingsRulesServiceTest {
     @Test
     public void shouldDivideRoundup() throws Exception {
         assertTrue(StandardSavingsRulesService.divideToGoalIds(new BigDecimal("100.00"), 3)
-                .compareTo(new BigDecimal("33.34")) == 0);
+                .compareTo(new BigDecimal("33.33")) == 0);
     }
 
     @Test
@@ -92,7 +92,8 @@ public class StandardSavingsRulesServiceTest {
 
     @Test
     public void executeShouldMatchGuiltyPleasureDescriptionAndProcessCorrectly() throws Exception {
-        SavingsRule guiltyPleasureRule = SavingsRule.createGuiltyPleasureRule(1L, 100L, "espresso house", new BigDecimal("10.00"), 11L, 22L, 33L);
+        SavingsRule guiltyPleasureRule = SavingsRule.createGuiltyPleasureRule(
+                1L, 100L, "espresso house", new BigDecimal("10.00"), 11L, 22L, 33L);
         assertTrue(guiltyPleasureRule.getSavingsGoalIds().size() > 1);
         LocalDate transactionDate = LocalDate.now().minusDays(5);
         when(transactionsService.latestTransactionsForUser(eq(guiltyPleasureRule.getUserId()))).thenReturn(Arrays.asList(
@@ -103,7 +104,8 @@ public class StandardSavingsRulesServiceTest {
 
         assertEquals(guiltyPleasureRule.getSavingsGoalIds().size(), savingsEvents.size());
         guiltyPleasureRule.getSavingsGoalIds().forEach(savingsGoalId ->
-                assertTrue(savingsEvents.contains(new SavingsEvent(100L, savingsGoalId, guiltyPleasureRule, rule_application, transactionDate, new BigDecimal("3.34"), 2L)))
+                assertTrue(savingsEvents.contains(
+                        new SavingsEvent(100L, savingsGoalId, guiltyPleasureRule, rule_application, transactionDate, new BigDecimal("3.33"), 2L)))
         );
     }
 

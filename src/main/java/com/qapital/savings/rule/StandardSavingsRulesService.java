@@ -91,7 +91,7 @@ public class StandardSavingsRulesService implements SavingsRulesService {
     static BigDecimal divideToGoalIds(BigDecimal amount, int numberOfGoalIds) {
         if(numberOfGoalIds <= 1) return amount;
         return amount.divide(new BigDecimal(numberOfGoalIds), 2,  // TODO we need to decide on scale and rounding
-                                  BigDecimal.ROUND_UP);
+                                  BigDecimal.ROUND_HALF_UP);
     }
 
 }
