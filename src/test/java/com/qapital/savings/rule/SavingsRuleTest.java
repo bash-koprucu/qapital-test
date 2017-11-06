@@ -27,7 +27,7 @@ public class SavingsRuleTest {
     private final SavingsRule guiltyPleasureRule;
 
     public SavingsRuleTest() {
-        roundUpRule = SavingsRule.createRoundupRule(1L, 100L, new BigDecimal("12.20"), 12L, 2342L);
+        roundUpRule = SavingsRule.createRoundupRule(1L, 100L, new BigDecimal("12.20"), 12L);
         guiltyPleasureRule = SavingsRule.createGuiltyPleasureRule(2L, 100L, "Dorsia", new BigDecimal("0.10"));
     }
 
@@ -38,7 +38,7 @@ public class SavingsRuleTest {
                 "  \"userId\" : 100,\n" +
                 "  \"ruleType\" : \"roundup\",\n" +
                 "  \"amount\" : 12.20,\n" +
-                "  \"savingsGoalIds\" : [ 12, 2342 ],\n" +
+                "  \"savingsGoalIds\" : [ 12 ],\n" +
                 "  \"status\" : \"active\"\n" +
                 "}";
 
