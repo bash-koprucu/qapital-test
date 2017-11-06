@@ -3,7 +3,6 @@ package com.qapital.savings.rule;
 import com.qapital.bankdata.transaction.Transaction;
 import com.qapital.bankdata.transaction.TransactionsService;
 import com.qapital.savings.event.SavingsEvent;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -11,7 +10,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import javax.validation.constraints.AssertTrue;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -19,7 +17,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static com.qapital.savings.event.SavingsEvent.EventName.rule_application;
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;

@@ -11,9 +11,3 @@
     - Uncertain points, and some ideas marked with "// TODO" comments
 
     - Joda time replaced with Java 8 time objects, Spring-boot version updated
-
-
-### Incomplete
-
-    - Test coverage
-
